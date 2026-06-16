@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Image Gallery</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>DHANAYUSH'S IMAGE GALLERY📷</h1>
+
+        <div class="header-controls">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search images..."
+            >
+
+            <button id="themeToggle">
+                🌙
+            </button>
+
+        </div>
+    </header>
+
+
+</section>
+    <!-- Category Filters -->
+    <section class="filters">
+
+        <button class="filter-btn active" data-category="all">
+            All
+        </button>
+
+        <button class="filter-btn" data-category="gym">
+            Gym
+        </button>
+
+        <button class="filter-btn" data-category="sports">
+            Sports
+        </button>
+
+        <button class="filter-btn" data-category="wwe">
+            WWE
+        </button>
+
+        <button class="filter-btn" data-category="bikes">
+            Bikes
+        </button>
+
+        <button class="filter-btn" data-category="cars">
+            Cars
+        </button>
+
+        <button class="filter-btn" data-category="nature">
+            Nature
+        </button>
+
+        <button class="filter-btn" data-category="technology">
+            Technology
+        </button>
+
+        <button class="filter-btn" data-category="travel">
+            Travel
+        </button>
+
+    </section>
+
+    <!-- Upload Section -->
+    <section class="upload-section">
+
+        <label class="upload-btn">
+            Upload Image
+            <input
+                type="file"
+                id="imageUpload"
+                accept="image/*"
+                hidden
+            >
+        </label>
+
+    </section>
+
+    <!-- Gallery -->
+    <main>
+
+        <div id="gallery" class="gallery">
+
+            <!-- Images added dynamically -->
+
+        </div>
+
+    </main>
+
+    <!-- Loader -->
+    <div id="loader" class="loader">
+        Loading...
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal">
+
+        <span id="closeModal" class="close">
+            &times;
+        </span>
+
+        <img
+            id="modalImage"
+            class="modal-content"
+        >
+
+        <div class="modal-actions">
+
+            <button id="downloadBtn">
+                Download
+            </button>
+
+            <button id="favoriteBtn">
+                ❤️ Favorite
+            </button>
+
+        </div>
+
+    </div>
+<main>
+
+    <div id="gallery" class="gallery">
+        <!-- Images added dynamically -->
+    </div>
+
+</main>
+
+<!-- ABOUT SECTION -->
+
+<section class="about-section">
+
+    <div class="about-content">
+
+        <h2>About This Project</h2>
+
+        <p>
+            Hi, I'm <strong>Dhanayush Gupta</strong>, a B.Tech Computer
+            Science student and aspiring Full Stack Developer.
+
+            This Professional Image Gallery was built using HTML,
+            CSS, and JavaScript. It includes advanced features such
+            as image search, category filtering, dark/light mode,
+            image uploads, favorites, downloads, responsive design,
+            and local data management.
+
+            The purpose of this project is to demonstrate my frontend
+            development skills and create an engaging user experience.
+        </p>
+
+    </div>
+
+</section>
+
+
+<footer class="footer">
+    <p>© 2026 Dhanayush Gupta | Built with HTML, CSS & JavaScript</p>
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
+    <script src="script.js"></script>
+
+</body>
+</html>
