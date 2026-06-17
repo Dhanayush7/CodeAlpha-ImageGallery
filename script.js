@@ -8,24 +8,41 @@ const modal = document.getElementById("imageModal");
 const modalImage = document.getElementById("modalImage");
 const closeModal = document.getElementById("closeModal");
 const downloadBtn = document.getElementById("downloadBtn");
-const favoriteBtn = document.getElementById("favoriteBtn");
 
+const bookmarkGallery =
+document.getElementById("bookmarkGallery");
+
+const suggestionContainer =
+document.getElementById("suggestionContainer");
+const relatedImages =
+document.getElementById(
+    "relatedImages"
+);
 let images = [];
-let currentCategory = "all";
 let currentImage = null;
 
 /* =========================
-   LOAD JSON DATA
+   LOAD IMAGES
 ========================= */
 
 async function loadImages() {
+
     try {
-        const response = await fetch("images.json");
-        images = await response.json();
+
+        const response =
+        await fetch("images.json");
+
+        images =
+        await response.json();
 
         renderImages(images);
-    } catch (error) {
-        console.error("Error loading images:", error);
+
+        renderBookmarks();
+
+    } catch(error){
+
+        console.log(error);
+
     }
 }
 
@@ -33,49 +50,68 @@ async function loadImages() {
    RENDER IMAGES
 ========================= */
 
-function renderImages(imageArray) {
+function renderImages(imageArray){
 
     gallery.innerHTML = "";
 
     imageArray.forEach(image => {
 
-        const card = document.createElement("div");
+        const card =
+        document.createElement("div");
+
         card.classList.add("card");
 
         card.innerHTML = `
-            <img src="${image.url}" alt="${image.title}" class="gallery-image">
 
-            <div class="card-content">
+        <img
+            src="${image.url}"
+            alt="${image.title}"
+        >
 
-                <div class="card-title">
-                    ${image.title}
-                </div>
+        <div class="card-content">
 
-                <div class="card-category">
-                    ${image.category}
-                </div>
+            <div class="card-title">
+                ${image.title}
+            </div>
 
-                <div class="card-actions">
+            <div class="card-category">
+                ${image.category}
+            </div>
 
-                    <button class="like-btn" onclick="toggleFavorite('${image.id}')">
-                        ❤️
-                    </button>
+            <div class="card-actions">
 
-                    <button class="download-btn" onclick="downloadImage('${image.url}')">
-                        ⬇ Download
-                    </button>
+                <button
+                class="like-btn"
+                onclick="toggleFavorite('${image.id}')">
 
-                </div>
+                    ❤️
+
+                </button>
+
+                <button
+                class="download-btn"
+                onclick="downloadImage('${image.url}')">
+
+                    ⬇ Download
+
+                </button>
 
             </div>
+
+        </div>
         `;
 
-        card.querySelector("img").addEventListener("click", () => {
-            openModal(image.url);
+        card.querySelector("img")
+        .addEventListener("click", () => {
+
+            openModal(image);
+
         });
 
         gallery.appendChild(card);
+
     });
+
 }
 
 /* =========================
@@ -84,13 +120,24 @@ function renderImages(imageArray) {
 
 searchInput.addEventListener("input", () => {
 
-    const value = searchInput.value.toLowerCase();
+    const value =
+    searchInput.value.toLowerCase();
 
-    const filtered = images.filter(image =>
-        image.title.toLowerCase().includes(value)
+    const filtered =
+    images.filter(image =>
+
+        image.title
+        .toLowerCase()
+        .includes(value)
+
     );
 
     renderImages(filtered);
+
+showRecommendations(
+    currentCategory
+);
+
 });
 
 /* =========================
@@ -102,24 +149,33 @@ filterButtons.forEach(button => {
     button.addEventListener("click", () => {
 
         document
-            .querySelector(".filter-btn.active")
-            .classList.remove("active");
+        .querySelector(".filter-btn.active")
+        .classList.remove("active");
 
         button.classList.add("active");
 
-        currentCategory = button.dataset.category;
+        const category =
+        button.dataset.category;
 
-        if (currentCategory === "all") {
+        if(category === "all"){
+
             renderImages(images);
+
             return;
+
         }
 
-        const filtered = images.filter(
-            image => image.category === currentCategory
+        const filtered =
+        images.filter(image =>
+
+            image.category === category
+
         );
 
         renderImages(filtered);
+
     });
+
 });
 
 /* =========================
@@ -130,87 +186,226 @@ themeToggle.addEventListener("click", () => {
 
     document.body.classList.toggle("dark");
 
-    if (document.body.classList.contains("dark")) {
+    if(document.body.classList.contains("dark")){
+
+        localStorage.setItem(
+            "theme",
+            "dark"
+        );
+
         themeToggle.innerHTML = "☀️";
-        localStorage.setItem("theme", "dark");
-    } else {
+
+    }else{
+
+        localStorage.setItem(
+            "theme",
+            "light"
+        );
+
         themeToggle.innerHTML = "🌙";
-        localStorage.setItem("theme", "light");
+
     }
+
 });
 
 window.addEventListener("load", () => {
 
-    const savedTheme = localStorage.getItem("theme");
+    const savedTheme =
+    localStorage.getItem("theme");
 
-    if (savedTheme === "dark") {
+    if(savedTheme === "dark"){
 
         document.body.classList.add("dark");
 
         themeToggle.innerHTML = "☀️";
+
     }
+
 });
 
 /* =========================
    IMAGE UPLOAD
 ========================= */
 
-imageUpload.addEventListener("change", event => {
+imageUpload.addEventListener(
+"change",
+event => {
 
-    const file = event.target.files[0];
+    const file =
+    event.target.files[0];
 
-    if (!file) return;
+    if(!file) return;
 
-    const reader = new FileReader();
+    const reader =
+    new FileReader();
 
-    reader.onload = function(e) {
+    reader.onload = e => {
 
-        const uploadedImage = {
+        images.unshift({
+
             id: Date.now().toString(),
-            title: "Uploaded Image",
-            category: "custom",
-            url: e.target.result
-        };
 
-        images.unshift(uploadedImage);
+            title: "Uploaded Image",
+
+            category: "custom",
+
+            url: e.target.result
+
+        });
 
         renderImages(images);
+
     };
 
     reader.readAsDataURL(file);
+
 });
 
 /* =========================
    MODAL
 ========================= */
 
-function openModal(imageSrc) {
+function openModal(imageObj){
 
-    currentImage = imageSrc;
+    currentImage =
+    imageObj.url;
 
-    modal.style.display = "block";
+    modal.style.display =
+    "block";
 
-    modalImage.src = imageSrc;
+    modalImage.src =
+    imageObj.url;
+
+    showRelatedImages(
+
+        imageObj.category,
+
+        imageObj.id
+
+    );
 }
 
-closeModal.addEventListener("click", () => {
-    modal.style.display = "none";
+function showRelatedImages(
+    category,
+    currentId
+){
+
+}
+closeModal.addEventListener(
+"click",
+() => {
+
+    modal.style.display =
+    "none";
+
 });
 
-window.addEventListener("click", e => {
+window.addEventListener(
+"click",
+e => {
 
-    if (e.target === modal) {
-        modal.style.display = "none";
+    if(e.target === modal){
+
+        modal.style.display =
+        "none";
+
     }
+
 });
+
+function showRelatedImages(
+    category,
+    currentId
+){
+
+    if(!relatedImages) return;
+
+    relatedImages.innerHTML = "";
+
+    const related =
+    images.filter(img =>
+
+        img.category === category &&
+        img.id !== currentId
+
+    ).slice(0,8);
+
+    related.forEach(img => {
+
+        const image =
+        document.createElement("img");
+
+        image.src = img.url;
+
+        image.alt = img.title;
+
+        image.addEventListener(
+            "click",
+            () => {
+
+                openModal(img);
+
+            }
+        );
+
+        relatedImages.appendChild(
+            image
+        );
+
+    });
+
+}
+
+/* =========================
+   SUGGESTED IMAGES
+========================= */
+
+function showSuggestedImages(
+category,
+currentId
+){
+
+    if(!suggestionContainer)
+    return;
+
+    suggestionContainer.innerHTML =
+    "";
+
+    const suggestions =
+    images.filter(img =>
+
+        img.category === category &&
+        img.id !== currentId
+
+    ).slice(0,4);
+
+    suggestions.forEach(img => {
+
+        const image =
+        document.createElement("img");
+
+        image.src = img.url;
+
+        image.addEventListener(
+            "click",
+            () => openModal(img)
+        );
+
+        suggestionContainer
+        .appendChild(image);
+
+    });
+
+}
 
 /* =========================
    DOWNLOAD IMAGE
 ========================= */
 
-function downloadImage(url) {
+function downloadImage(url){
 
-    const a = document.createElement("a");
+    const a =
+    document.createElement("a");
 
     a.href = url;
 
@@ -221,72 +416,141 @@ function downloadImage(url) {
     a.click();
 
     document.body.removeChild(a);
+
 }
 
-downloadBtn.addEventListener("click", () => {
+downloadBtn.addEventListener(
+"click",
+() => {
 
-    if (currentImage) {
-        downloadImage(currentImage);
+    if(currentImage){
+
+        downloadImage(
+            currentImage
+        );
+
     }
+
 });
 
 /* =========================
    FAVORITES
 ========================= */
 
-function toggleFavorite(id) {
+function toggleFavorite(id){
 
     let favorites =
-        JSON.parse(localStorage.getItem("favorites")) || [];
+    JSON.parse(
+        localStorage.getItem(
+            "favorites"
+        )
+    ) || [];
 
-    if (favorites.includes(id)) {
+    if(favorites.includes(id)){
 
-        favorites = favorites.filter(
+        favorites =
+        favorites.filter(
             item => item !== id
         );
 
-    } else {
+    }else{
 
         favorites.push(id);
+
     }
 
     localStorage.setItem(
+
         "favorites",
-        JSON.stringify(favorites)
+
+        JSON.stringify(
+            favorites
+        )
+
     );
+
+    renderBookmarks();
+
 }
 
 /* =========================
-   MODAL FAVORITE BUTTON
+   BOOKMARK GALLERY
 ========================= */
 
-favoriteBtn.addEventListener("click", () => {
+function renderBookmarks(){
 
-    alert(
-        "Use heart buttons on cards to save favorites."
+    if(!bookmarkGallery)
+    return;
+
+    bookmarkGallery.innerHTML =
+    "";
+
+    const favorites =
+    JSON.parse(
+        localStorage.getItem(
+            "favorites"
+        )
+    ) || [];
+
+    const bookmarkedImages =
+    images.filter(img =>
+
+        favorites.includes(img.id)
+
     );
-});
+
+    bookmarkedImages.forEach(img => {
+
+        const image =
+        document.createElement("img");
+
+        image.src = img.url;
+
+        image.alt = img.title;
+
+        bookmarkGallery
+        .appendChild(image);
+
+    });
+
+}
 
 /* =========================
-   INFINITE SCROLL
+   POPULAR CATEGORY CARDS
 ========================= */
 
-window.addEventListener("scroll", () => {
+document
+.querySelectorAll(".cat-card")
+.forEach(card => {
 
-    const scrollTop = window.scrollY;
+    card.addEventListener(
+        "click",
+        () => {
 
-    const windowHeight = window.innerHeight;
+            const category =
+            card.dataset.category;
 
-    const documentHeight =
-        document.documentElement.scrollHeight;
+            const filtered =
+            images.filter(img =>
 
-    if (
-        scrollTop + windowHeight >=
-        documentHeight - 50
-    ) {
+                img.category ===
+                category
 
-        console.log("Reached bottom");
-    }
+            );
+
+            renderImages(filtered);
+
+            window.scrollTo({
+
+                top:300,
+
+                behavior:"smooth"
+
+            });
+
+        }
+    );
+
 });
 
 /* =========================
@@ -294,3 +558,35 @@ window.addEventListener("scroll", () => {
 ========================= */
 
 loadImages();
+
+function showRecommendations(category){
+
+    const container =
+    document.getElementById(
+        "recommendedGallery"
+    );
+
+    if(!container) return;
+
+    const recommendations =
+    images.filter(img =>
+        img.category === category
+    );
+
+    container.innerHTML = "";
+
+    recommendations.forEach(img => {
+
+        const card =
+        document.createElement("div");
+
+        card.classList.add("card");
+
+        card.innerHTML = `
+            <img src="${img.url}">
+        `;
+
+        container.appendChild(card);
+
+    });
+}
